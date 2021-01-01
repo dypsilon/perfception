@@ -11,6 +11,7 @@ For example:
 ```bash
 git clone git@github.com:dypsilon/perfception.git
 cd perfception
+npm install
 ln -s `realpath cli.js` /usr/local/bin/perfception
 ```
 
@@ -25,7 +26,7 @@ Now you are able to create project directory and run `perfception` inside of it.
 
 ## Collecting
 
-Note: collecting is a command which should be run from the project directory as `cwd`.
+Note: `collect` is a command which should be run from the project directory as `cwd`.
 
 Running collect with pretty output (recommended only for development).
 
@@ -39,7 +40,7 @@ Filtering output by a log level. One of 'fatal', 'error', 'warn', 'info', 'debug
 perfception collect --level info
 ```
 
-Collecting and outputing the logs to a file in addition to the STDOUT.
+Collecting and outputting the logs to a file in addition to the STDOUT.
 
 ```bash
 perfception collect 2>&1 | tee logs/collect`date '+%Y-%m-%d_%H-%M-%S'`.log
@@ -58,12 +59,6 @@ You can now analyze the corresponding log if required with:
 ```bash
 # replace the date and time in the file name and `.level > 0` with the level you want to work with (e.g. 30, 40, 50).
 cat collect2020-05-16_17-40-14.log |  jq -c 'select(.level > 0)' | pino-pretty
-```
-
-Running the collector using docker compose:
-
-```bash
-docker-compose run --rm --detach psi-collector
 ```
 
 ## Indexing
@@ -92,7 +87,7 @@ By default it will run on port `3001`. The reports are now available under the f
 http://localhost:3001/api/report/<report-id>/lighthouse-html
 ```
 
-Where the report ID is the ID of the reporty you want to view. For example:
+Replace `<report-id>` with an ID of the report you want to view. For example:
 
 ```
 http://localhost:3001/api/report/1589551009-92b95d6cf956991e/lighthouse-html
