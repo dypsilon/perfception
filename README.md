@@ -2,6 +2,12 @@
 
 Utilities for website performance measurement and analysis.
 
+## Project Status
+
+The project is currently in the prototype mode and might never leave it. You are
+welcome to fork it and play with it but keep in mind that it is not intended for
+any serious usage in the current stage, except if you know what you are doing.
+
 ## Installation
 
 Clone the repository, run `npm install`, and add `cli.js` to the PATH.
