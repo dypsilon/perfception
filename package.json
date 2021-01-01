@@ -1,0 +1,37 @@
+{
+	"name": "perfception",
+	"version": "0.1.0",
+	"description": "Utilities for website performance measurement and analysis.",
+	"main": "cli.js",
+	"scripts": {
+		"test": "jest"
+	},
+	"keywords": [
+		"performance",
+		"pagespeed",
+		"lighthouse"
+	],
+	"repository": {
+		"type": "git",
+		"url": "git@github.com:dypsilon/perfception.git"
+	},
+	"bin": {
+		"perfception": "./cli.js"
+	},
+	"author": "Tim Navrotskyy",
+	"license": "Apache-2.0",
+	"dependencies": {
+		"@elastic/elasticsearch": "^7.6.1",
+		"axios": "^0.19.2",
+		"express": "^4.17.1",
+		"express-async-handler": "^1.1.4",
+		"lighthouse": "^6.0.0",
+		"mkdirp": "^1.0.4",
+		"pino": "^6.2.1",
+		"ramda": "^0.27.0"
+	},
+	"devDependencies": {
+		"jest": "^26.0.1",
+		"pino-pretty": "^4.0.0"
+	}
+}

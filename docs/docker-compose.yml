@@ -1,0 +1,53 @@
+version: "3.8"
+services:
+  lhr-viewer:
+    build: ../perfception/src
+    ports:
+      - "3001:3001"
+    volumes:
+      - .:/project
+    working_dir: /project
+    command:
+      [
+        "/usr/src/perfception/cli.js",
+        "run-lhr-viewer",
+        "--port",
+        "3001",
+        "--host",
+        "0.0.0.0",
+      ]
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+  es01:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.7.0
+    container_name: es01
+    environment:
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - esdata01:/usr/share/elasticsearch/data
+    networks:
+      - elastic
+  kib01:
+    image: docker.elastic.co/kibana/kibana:7.7.0
+    container_name: kib01
+    ports:
+      - 5601:5601
+    environment:
+      ELASTICSEARCH_URL: http://es01:9200
+      ELASTICSEARCH_HOSTS: http://es01:9200
+    networks:
+      - elastic
+volumes:
+  esdata01:
+    driver: local
+networks:
+  elastic:
+    driver: bridge
