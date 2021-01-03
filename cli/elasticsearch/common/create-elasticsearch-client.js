@@ -1,6 +1,7 @@
 const elasticsearch = require("@elastic/elasticsearch");
 const { getConfPath } = require("../../common/paths.js");
 
-const elasticConfig = require(getConfPath("elasticsearch.js"));
-
-module.exports = () => new elasticsearch.Client(elasticConfig.client);
+module.exports = () => {
+	const elasticConfig = require(getConfPath("elasticsearch.js"));
+	return new elasticsearch.Client(elasticConfig.client);
+}
