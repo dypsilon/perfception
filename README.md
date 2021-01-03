@@ -45,20 +45,9 @@ Linux and Bash is required. If you want to use Kibana Dashboards, which is the
 only way to view the data right now, understanding of Elasticsearch and Kibana
 is mandatory.
 
-## Installation
+## How To
 
-Clone the repository, run `npm install`, and add `cli.js` to the PATH.
-
-For example:
-
-```bash
-git clone git@github.com:dypsilon/perfception.git
-cd perfception
-npm install
-ln -s `realpath cli.js` /usr/local/bin/perfception
-```
-
-Now you are able to create a project directory and run `perfception` inside of it.
+- [Install Perfception](docs/how-to/install-perfception.md)
 
 ## Creating a Project
 
