@@ -5,6 +5,7 @@ const mkdirp = require("mkdirp");
 const R = require("ramda");
 const { createId, getEntityPathById } = require("./common/file-store.js");
 const { getConfPath, getRunPath, getReportPath } = require("./common/paths.js");
+const prepareQueries = require('./collect/prepare-queries.js');
 
 const queriesConf = require(getConfPath("queries.js"));
 
@@ -27,98 +28,11 @@ module.exports = async ({ logger }) => {
 		config: R.omit(["queries"], queriesConf),
 	});
 
-	// add base URL to every relative URL in the query
-	const absUrl = (baseUrl) => (query) => ({
-		...query,
-		relativeUrl: query.request.url,
-		request: {
-			...query.request,
-			url: baseUrl + query.request.url,
-		},
-	});
-
-	// if a global repeat is configured apply it to every query
-	// it can be overwritten by the query config itself
-	const applyGlobalRepeat = (globalRepeat) => (query) => {
-		if (!globalRepeat || query.repeat) return query;
-		if (globalRepeat)
-			return {
-				...query,
-				repeat: globalRepeat,
-			};
-		return { ...query, repeat: 1 };
-	};
-
-	// apply global strategy configuration
-	const applyGlobalStrategy = (globalStrategy) => (query) => {
-		if (!globalStrategy || query.request.strategy) return query;
-		if (globalStrategy)
-			return {
-				...query,
-				request: {
-					...query.request,
-					strategy: globalStrategy,
-				},
-			};
-		return { ...query, strategy: "desktop" };
-	};
-
-	// apply global api key configuration
-	const applyGlobalApiKey = (apiKey) => (query) => {
-		if (!apiKey || query.request.key) return query;
-		if (apiKey)
-			return {
-				...query,
-				request: {
-					...query.request,
-					key: apiKey,
-				},
-			};
-		return query;
-	};
-
-	// add additional query configs into the array according to the strategy conifguration
-	const expandStrategies = R.reduce((acc, query) => {
-		const setStrategy = (query) => (strategy) =>
-			R.assocPath(["request", "strategy"], strategy, query);
-		if (R.is(Array, query.request.strategy)) {
-			return [...acc, ...R.map(setStrategy(query), query.request.strategy)];
-		} else {
-			return [...acc, query];
-		}
-	}, []);
-
-	// add additional query configs into the array according to the repeat conifguration
-	const expandRepeats = R.reduce((acc, query) => {
-		const iterator = (seed) =>
-			seed.repeat > 0 ? [seed, { ...seed, repeat: seed.repeat - 1 }] : false;
-
-		if (query.repeat && query.repeat > 1) {
-			return [...acc, ...R.reverse(R.unfold(iterator, query))];
-		} else {
-			return [...acc, query];
-		}
-	}, []);
-
-	// compose the above steps into a single function
-	const prepareQueries = R.compose(
-		expandStrategies,
-		expandRepeats,
-		R.map(
-			R.compose(
-				applyGlobalApiKey(queriesConf.apiKey),
-				applyGlobalStrategy(queriesConf.strategy),
-				applyGlobalRepeat(queriesConf.repeat),
-				absUrl(queriesConf.baseUrl)
-			)
-		)
-	);
-
-	const queue = prepareQueries(queriesConf.queries);
+	const queue = prepareQueries(queriesConf);
 
 	// START PROCESSING THE REQUESTS
 	// this is more elaborate as it could be because we want to
-	// avoid the PSI caching of aprox. 30s and rate limiting of aprox 60 request per 100 seconds
+	// avoid the PSI caching of approx. 30s and rate limiting of approx 60 request per 100 seconds
 	// at the same time
 	runLogger.info({ step: "start requests", queueSize: queue.length });
 
